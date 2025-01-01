@@ -18,6 +18,22 @@
             50% { background-color: rgb(75, 63, 63); }
         }
 
+        @keyframes colorFlicker {
+            0% { background-color: red; }
+            8.33% { background-color: orange; }
+            16.66% { background-color: yellow; }
+            25% { background-color: green; }
+            33.33% { background-color: blue; }
+            41.66% { background-color: indigo; }
+            50% { background-color: violet; }
+            58.33% { background-color: purple; }
+            66.66% { background-color: cyan; }
+            75% { background-color: magenta; }
+            83.33% { background-color: lime; }
+            91.66% { background-color: pink; }
+            100% { background-color: black; }
+        }
+
         body {
             animation: flicker 1.1s infinite;
             color: white;
@@ -117,6 +133,19 @@
             animation: flicker 1.1s infinite;
         }
 
+        .lost-message {
+            position: absolute;
+            font-family: 'Silkscreen', cursive;
+            color: white;
+            font-size: 24px;
+            background-color: black;
+            border: 2px solid red;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
         .flashing-link {
             animation: flash-color 1s infinite;
         }
@@ -134,31 +163,39 @@
             font-family: 'Roboto', sans-serif;
             color: white;
         }
+
+        .error {
+            font-family: 'Silkscreen', cursive;
+            color: red;
+            font-size: 36px;
+        }
     </style>
 </head>
 <body>
-    <h1>Admin login page</h1>
-    <p>Are you here? If you need to ask for this, you're already too far gone. Not enough! NOT ENOUGH HERE! NOT ENOUGH THERE! NOT ENOUGH ANYWHERE! NOT ENOUGH ANYWHERE!</p>
+    <div id="content">
+        <h1>Admin login page</h1>
+        <p>Are you here? If you need to ask for this, you're already too far gone. Not enough! NOT ENOUGH HERE! NOT ENOUGH THERE! NOT ENOUGH ANYWHERE! NOT ENOUGH ANYWHERE!</p>
 
-    <div class="login-form">
-        <div class="title">TyamhProduktions mainframe ISSUE:10</div>
-        <div class="form">
-            <form id="loginForm">
-                <div class="input-container">
-                    <label>Username</label>
-                    <input type="text" name="uname" required>
-                </div>
-                <div class="input-container">
-                    <label>Password</label>
-                    <input type="password" name="pass" required>
-                </div>
-                <div class="button-container">
-                    <input type="submit" value="Login">
-                </div>
-                <div class="button-container">
-                    <button type="button" class="console-btn">Exit</button>
-                </div>
-            </form>
+        <div class="login-form">
+            <div class="title">TyamhProduktions mainframe ISSUE:10</div>
+            <div class="form">
+                <form id="loginForm">
+                    <div class="input-container">
+                        <label>Username</label>
+                        <input type="text" name="uname" required>
+                    </div>
+                    <div class="input-container">
+                        <label>Password</label>
+                        <input type="password" name="pass" required>
+                    </div>
+                    <div class="button-container">
+                        <input type="submit" value="Login">
+                    </div>
+                    <div class="button-container">
+                        <button type="button" class="console-btn">Exit</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -170,71 +207,146 @@
     <div class="timer" id="timer"></div>
 
     <script>
-        let attemptCount = 0;
+        document.addEventListener("DOMContentLoaded", () => {
+            const redirectUrls = [
+                "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                "http://www.pointerpointer.com/",
+                "https://www.theuselessweb.com/",
+                "https://www.theuselessweb.com/",
+                "http://www.staggeringbeauty.com/",
+                "http://zoomquilt.org/",
+                "http://eelslap.com/",
+                "http://cat-bounce.com/",
+                "https://www.thiswebsite.com",
+                "http://www.koalastothemax.com/",
+                "https://tyamh.github.io/Bricks/",
+                "https://www.youtube.com/watch?v=DbYWTi3Bxoo"
+            ];
 
-        document.getElementById('loginForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const username = event.target.uname.value;
-            const password = event.target.pass.value;
-
-            if (username === 'admin' && password === 'Admin') {
-                document.getElementById('hiddenContent').style.display = 'block';
-                displayMessages();
-            } else {
-                attemptCount++;
-                alert('MISSCLICK I ASSUME ' + attemptCount);
-
-                if (attemptCount >= 10) {
-                    alert('ERROR! ERROR! ERROR: SELF DESTRUCT!');
-                    window.close();
-                } else {
-                    const newDuration = Math.max(0.1, 1.1 - attemptCount * 0.1) + 's';
-                    document.body.style.animationDuration = newDuration;
-                }
+            if (localStorage.getItem("loginFailed") === "true") {
+                document.getElementById("content").innerHTML = '<div class="error">ERROR</div>';
+                let timeLeft = 10;
+                const countdown = setInterval(() => {
+                    if (timeLeft <= 0) {
+                        clearInterval(countdown);
+                        const randomUrl = redirectUrls[Math.floor(Math.random() * redirectUrls.length)];
+                        window.location.href = randomUrl;
+                    } else {
+                        console.log(`Redirecting in ${timeLeft} seconds`);
+                    }
+                    timeLeft--;
+                }, 1000);
+                return;
             }
-        });
 
-        function displayMessages() {
-            let messageCount = 0;
-            const interval = setInterval(() => {
-                if (messageCount < 40) {
-                    createMessage("UNTIL THEY FIND OUT");
-                } else if (messageCount === 40) {
-                    const link = createMessage("<a href='#' class='flashing-link'>UNTIL THEY FIND OUT</a>");
-                    startTimer();
-                    link.addEventListener('click', () => window.open("https://example.com", "_blank"));
-                    clearInterval(interval);
-                }
-                messageCount++;
-            }, 3000);
-        }
+            let attemptCount = 0;
 
-        function createMessage(text) {
-            const message = document.createElement('div');
-            message.className = 'message';
-            message.innerHTML = text;
-            message.style.top = Math.random() * 80 + 'vh';
-            message.style.left = Math.random() * 80 + 'vw';
-            document.body.appendChild(message);
-            return message;
-        }
+            document.getElementById('loginForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const username = event.target.uname.value;
+                const password = event.target.pass.value;
 
-        function startTimer() {
-            let timeLeft = 5;
-            const timerElement = document.getElementById('timer');
-            const countdown = setInterval(() => {
-                if (timeLeft <= 0) {
-                    clearInterval(countdown);
-                    window.close();
+                if (username === 'admin' && password === 'Admin') {
+                    document.getElementById('hiddenContent').style.display = 'block';
+                    displayMessages();
+                    document.querySelector('input[type="submit"]').disabled = true; 
                 } else {
-                    timerElement.textContent = `Closing in ${timeLeft} seconds`;
-                }
-                timeLeft--;
-            }, 1000);
-        }
+                    attemptCount++;
+                    alert('MISSCLICK I ASSUME ' + attemptCount);
 
-        document.querySelector('.console-btn').addEventListener('click', function() {
-            window.close();
+                    if (attemptCount >= 10) {
+                        localStorage.setItem("loginFailed", "true");
+                        alert('ERROR! ERROR! ERROR: YOU ARE RESTRICTED FROM FURTHER ATTEMPTS!');
+                        document.getElementById('loginForm').style.display = 'none';
+                        document.body.style.animation = 'colorFlicker 1s infinite';
+                        startLostMessages();
+                        startCountdown();
+                    } else {
+                        const newDuration = Math.max(0.1, 1.1 - attemptCount * 0.1) + 's';
+                        document.body.style.animationDuration = newDuration; 
+                    }
+                }
+            }); 
+
+            function displayMessages() {
+                let messageCount = 0;
+                const interval = setInterval(() => {
+                    if (messageCount < 100) {
+                        createMessage("UNTIL THEY FIND OUT");
+                    } else if (messageCount === 100) {
+                        const link = createMessage("<a href='#' class='flashing-link'>UNTIL THEY FIND OUT</a>");
+                        startTimer();
+                        link.addEventListener('click', () => window.open("https://example.com", "_blank"));
+                        clearInterval(interval);
+                    }
+                    messageCount++;
+                }, 3000);
+            }
+
+            function createMessage(text) {
+                const message = document.createElement('div');
+                message.className = 'message';
+                message.innerHTML = text;
+                message.style.top = Math.random() * 80 + 'vh';
+                message.style.left = Math.random() * 80 + 'vw';
+                document.body.appendChild(message);
+                return message;
+            }
+
+            function startTimer() {
+                let timeLeft = 5;
+                const timerElement = document.getElementById('timer');
+                const countdown = setInterval(() => {
+                    if (timeLeft <= 0) {
+                        clearInterval(countdown);
+                        try {
+                            window.close();
+                            if (!window.closed) {
+                                window.location.href = "https://www.google.com";
+                            }
+                        } catch (e) {
+                            window.location.href = "https://www.google.com";
+                        }
+                    } else {
+                        timerElement.textContent = `Closing in ${timeLeft} seconds`;
+                    }
+                    timeLeft--;
+                }, 1000);
+            }
+
+            function startLostMessages() {
+                setInterval(() => {
+                    createLostMessage("YOU LOST!");
+                }, 10);
+            }
+
+            function createLostMessage(text) {
+                const message = document.createElement('div');
+                message.className = 'lost-message';
+                message.innerHTML = text;
+                message.style.width = '10vw'; 
+                message.style.height = '10vh'; 
+                message.style.top = Math.random() * 90 + 'vh';
+                message.style.left = Math.random() * 90 + 'vw';
+                document.body.appendChild(message);
+            }
+
+            function startCountdown() {
+                let timeLeft = 5;
+                const countdown = setInterval(() => {
+                    if (timeLeft <= 0) {
+                        clearInterval(countdown);
+                        window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"; 
+                    } else {
+                        alert(`Redirecting in ${timeLeft} seconds`);
+                    }
+                    timeLeft--;
+                }, 1000);
+            }
+
+            document.querySelector('.console-btn').addEventListener('click', function() {
+                window.close();
+            });
         });
     </script>
 </body>
